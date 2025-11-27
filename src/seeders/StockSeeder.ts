@@ -5,10 +5,10 @@ import { User } from '../entities/User';
 export class StockSeeder {
   async run(em: EntityManager) {
     // Ambil admin pertama
-    const admin = await em.findOne(User, { email: 'admin@gmail.com' });
+    const admin = await em.findOne(User, { email: 'admin@example.com' });
 
     if (!admin) {
-      console.error('User admin tidak ditemukan! Jalankan UserSeeder dulu.');
+      console.log('User admin tidak ditemukan! Jalankan UserSeeder dulu.');
       return;
     }
 

@@ -17,12 +17,16 @@ export class MovementStock {
   stocks = new Collection<Stock>(this);
   @Property()
   movementType!: string; // e.g., 'in' or 'out'
+
   @Property()
   quantity!: number;
+
   @Property({ type: 'date' })
   createdAt: Date = new Date();
+
   @Property({ type: 'date', onUpdate: () => new Date() })
   updatedAt: Date = new Date();
+
   @Property({ type: 'date', nullable: true })
   deletedAt?: Date;
 }

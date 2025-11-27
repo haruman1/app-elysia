@@ -67,7 +67,7 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
         email: user.email,
         role: user.role,
       });
-
+      console.log('Payload:', token);
       return {
         success: true,
         message: 'Login berhasil',

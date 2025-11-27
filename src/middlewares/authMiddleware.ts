@@ -1,3 +1,4 @@
+// src/middlewares/authMiddleware.ts
 import { Elysia } from 'elysia';
 
 export const authMiddleware = new Elysia()
@@ -15,13 +16,13 @@ export const authMiddleware = new Elysia()
       return { user: null };
     }
   })
-
   .onBeforeHandle(({ user, set }) => {
     if (!user) {
       set.status = 401;
       return {
         success: false,
-        message: 'Token tidak valid atau belum dikirim',
+        message: 'Unauthorized Access',
       };
     }
-  });
+  })
+  .as('global');

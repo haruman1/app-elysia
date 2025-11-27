@@ -7,6 +7,8 @@ import { authRoutes } from './routes/auth';
 import { userRoutes } from './routes/users';
 import openapi from '@elysiajs/openapi';
 import { stockRoutes } from './routes/stock';
+
+import { movementStockRoutes } from './routes/movementStock';
 let orm: MikroORM | null = null;
 /**
  * Initialize the Elysia application with MikroORM and start the server.
@@ -28,11 +30,16 @@ async function bootstrap() {
     )
     .decorate('orm', orm)
     .get('/', () => 'Hello Elysia')
-    .use(openapi())
+    .use(
+      openapi({
+        title: 'Haruman API',
+        version: '1.0.0',
+      })
+    )
     .use(authRoutes)
     .use(userRoutes)
     .use(stockRoutes)
-
+    .use(movementStockRoutes)
     .listen(parseInt(process.env.PORT!));
 
   console.log(`🚀 Running at http://localhost:${process.env.PORT}`);

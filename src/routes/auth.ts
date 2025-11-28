@@ -8,9 +8,10 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
     '/register',
     async ({ body }) => {
       const { name, email, password, role } = body;
-      const existingUser = await query('SELECT * FROM user WHERE email = ?', [
-        email,
-      ]);
+      const existingUser = await query(
+        'SELECT email, password, role FROM user WHERE email = ?',
+        [email]
+      );
       if (existingUser.length > 0) {
         return { success: false, message: 'Email sudah terdaftar' };
       }
@@ -24,6 +25,7 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
         success: true,
         message: 'Registrasi berhasil, silakan login',
         data: user,
+        timestamp: new Date(),
       };
     },
     {
@@ -39,7 +41,10 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
     '/sign-in',
     async ({ body, jwt }) => {
       const { email, password } = body;
-      const users = await query('SELECT * FROM user WHERE email = ?', [email]);
+      const users = await query(
+        'SELECT id, email, password, role FROM user WHERE email = ?',
+        [email]
+      );
       const user = users[0];
       if (!user) {
         return { success: false, message: 'Email tidak ditemukan' };
@@ -58,6 +63,7 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
         success: true,
         message: 'Login berhasil',
         data: token,
+        timestamp: new Date(),
       };
     },
     {

@@ -15,7 +15,7 @@ const Mysql = serverlessMysql({
     user: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD || '',
     port: parseInt(process.env.DB_PORT || '3306'),
-    connectionLimit: isVercel ? 1 : 3,
+    connectionLimit: 1,
   },
   returnFinalSqlQuery: true,
 });
@@ -35,9 +35,7 @@ export async function query<T = any>(sql: string, values: any[] = []) {
     throw err;
   } finally {
     // wajib close connection kalau serverless (Vercel)
-    if (isVercel) {
-      await Mysql.end();
-    }
+    await Mysql.end();
   }
 }
 

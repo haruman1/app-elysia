@@ -5,7 +5,7 @@ export const authMiddleware = new Elysia()
   .derive(async ({ jwt, request }) => {
     const auth = request.headers.get('authorization');
 
-    if (!auth || !auth.startsWith('Bearer ')) return { user: null };
+    if (!auth || !auth.startsWith('Bearer ')) throw new Error('UNAUTHORIZED');
 
     const token = auth.split(' ')[1];
 
@@ -22,6 +22,14 @@ export const authMiddleware = new Elysia()
       return {
         success: false,
         message: 'Unauthorized Access',
+      };
+    }
+  })
+  .onError(({ code, error }) => {
+    if (error.message === 'UNAUTHORIZED') {
+      return {
+        success: false,
+        message: 'Unauthorized access',
       };
     }
   })

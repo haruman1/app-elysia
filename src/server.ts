@@ -23,6 +23,17 @@ async function bootstrap() {
         authorization: t.Optional(t.String()),
       }),
     })
+    .onError(({ code, error }) => {
+      if (code === 401) {
+        return { success: false, message: 'Unauthorized Access' };
+      }
+      if (code === 'NOT_FOUND') {
+        return {
+          success: false,
+          message: 'Unauthorized Access',
+        };
+      }
+    })
     .get('/', () => 'Hello Elysia')
     .use(openapi())
     .use(authRoutes)

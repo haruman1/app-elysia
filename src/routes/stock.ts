@@ -3,6 +3,8 @@ import { authMiddleware } from '../middlewares/authMiddleware';
 import { User } from '../entities/User';
 import { Stock } from '../entities/Stock';
 import { query } from '../../mysql.config';
+import PDFDocument from 'pdfkit';
+
 export const stockRoutes = new Elysia({ prefix: '/stocks' })
   .use(authMiddleware)
   .post(
@@ -103,63 +105,163 @@ export const stockRoutes = new Elysia({ prefix: '/stocks' })
         authorization: t.String(),
       }),
     }
+  )
+  .get('preview/:id', async ({ params, user, set }) => {
+    const rows = await query(
+      'SELECT * FROM stock WHERE user_id = ? AND deleted_at IS NULL',
+      [user.id]
+    );
+
+    // PDF header
+    set.headers['Content-Type'] = 'application/pdf';
+
+    const doc = new PDFDocument();
+
+    // PDF CONTENT
+    doc
+      .fontSize(18)
+      .text(`Laporan Stock oleh: ${rows[0].name}`, { underline: true });
+    doc.moveDown();
+
+    if (!rows.length) {
+      doc.fontSize(14).text('Tidak ada data stock.', { align: 'left' });
+    } else {
+      rows.forEach((item, index) => {
+        doc.fontSize(14).text(`${index + 1}. ${item.nama_produk}`);
+        doc.text(`Jumlah        : ${item.jumlah_produk}`);
+        doc.text(`Harga          : ${item.harga_produk}`);
+        doc.text(`Ditambahkan oleh: ${item.name}`);
+        doc.moveDown();
+      });
+    }
+
+    doc.end();
+    return doc;
+  })
+  .patch(
+    '/:id',
+    async ({ params, body, user }) => {
+      const id = String(params.id).trim();
+      const userCheck = await query('SELECT id FROM user WHERE id = ?', [
+        user.id,
+      ]);
+      if (userCheck.length === 0) {
+        return { success: false, message: 'Unauthorized access' };
+      }
+      const stockCheck = await query(
+        'SELECT id FROM stock WHERE id = ? AND user_id = ?',
+        [id, userCheck[0].id]
+      );
+      if (stockCheck.length === 0) {
+        return { success: false, message: 'Stock tidak ditemukan' };
+      }
+      const updateStock = await query(
+        'UPDATE stock SET nama_produk = ?, jumlah_produk = ?, harga_produk = ?, updated_at = NOW() WHERE id = ? AND user_id = ?',
+        [
+          body.nama_produk,
+          body.jumlah_produk,
+          body.harga_produk,
+          id,
+          userCheck[0].id,
+        ]
+      );
+      return {
+        success: true,
+        message: 'Stock berhasil diupdate',
+        data: updateStock,
+        timestamp: new Date(),
+      };
+    },
+    {
+      headers: t.Object({
+        authorization: t.String(),
+      }),
+      body: t.Object({
+        nama_produk: t.String(),
+        jumlah_produk: t.Number(),
+        harga_produk: t.Number(),
+      }),
+    }
+  )
+  .patch('/revive/:id', async ({ params, user }) => {
+    const id = String(params.id).trim();
+    const userCheck = await query('SELECT * FROM user WHERE id = ?', [user.id]);
+    if (userCheck.length === 0) {
+      return { success: false, message: 'Unauthorized access' };
+    }
+    const stockCheck = await query(
+      'SELECT id FROM stock WHERE id = ? AND user_id = ?',
+      [id, userCheck[0].id]
+    );
+    if (stockCheck[0].deleted_at === null) {
+      return { success: false, message: 'Stock tidak dalam status terhapus' };
+    }
+    if (stockCheck.length === 0) {
+      return { success: false, message: 'Stock tidak ditemukan' };
+    }
+    const updateStock = await query(
+      'UPDATE stock SET deleted_at = NULL WHERE id = ? AND user_id = ?',
+      [id, userCheck[0].id]
+    );
+    if (updateStock.affectedRows === 0) {
+      return {
+        success: false,
+        message: 'Stock tidak ditemukan atau tidak bisa dihapus',
+      };
+    }
+    return {
+      success: true,
+      message: 'Stock berhasil dipulihkan',
+      data: {
+        id,
+      },
+      timestamp: new Date(),
+    };
+  })
+  .delete(
+    '/:id',
+    async ({ params, user }) => {
+      const id = String(params.id).trim();
+      const userCheck = await query('SELECT id, role FROM user WHERE id = ?', [
+        user.id,
+      ]);
+      if (userCheck[0].role !== 'admin') {
+        return { success: false, message: 'Unauthorized access' };
+      }
+      if (userCheck.length === 0) {
+        return { success: false, message: 'Unauthorized access' };
+      }
+      const stockCheck = await query(
+        'SELECT id FROM stock WHERE id = ? AND user_id = ?',
+        [id, userCheck[0].id]
+      );
+      if (stockCheck.length === 0) {
+        return { success: false, message: 'Stock tidak ditemukan' };
+      }
+
+      const softDelete = await query(
+        'UPDATE stock SET deleted_at = NOW() WHERE id = ? AND user_id = ?',
+        [id, userCheck[0].id]
+      );
+      if (softDelete.affectedRows === 0) {
+        return {
+          success: false,
+          message: 'Stock tidak ditemukan atau tidak bisa dihapus',
+        };
+      }
+      return {
+        success: true,
+        message: 'Stock berhasil dihapus',
+        data: {
+          id,
+          deleted: true,
+        },
+        timestamp: new Date(),
+      };
+    },
+    {
+      headers: t.Object({
+        authorization: t.String(),
+      }),
+    }
   );
-
-// .get('/', async ({ orm, user }) => {
-//   const em = orm.em.fork();
-
-//   const stocks = await em.find(Stock, {});
-
-//   return { success: true, message: 'Stock ditemukan', data: stocks };
-// })
-// .get('/:id', async ({ orm, user, params }) => {
-//   const em = orm.em.fork();
-//   const userID = String(user.id);
-//   const stock = await em.findOne(Stock, {
-//     id: params.id,
-//     user: { id: userID },
-//   });
-//   if (!stock) {
-//     return { success: false, message: 'Stock tidak ditemukan' };
-//   }
-//   return { success: true, message: 'Stock ditemukan', data: stock };
-// })
-// .post('/', async ({ orm, user, body }) => {
-//   const em = orm.em.fork();
-//   const userID = String(user.id);
-//   const stock = em.create(Stock, {
-//     name: body.name,
-//     quantity: body.quantity,
-//     user: { id: userID },
-//   });
-//   await em.persistAndFlush(stock);
-//   return {
-//     success: true,
-//     message: 'Stock berhasil ditambahkan',
-//     data: stock,
-//   };
-// })
-// .delete('/:id', async ({ orm, user, params }) => {
-//   const em = orm.em.fork();
-//   const userID = String(user.id);
-//   const id = String(params.id).trim();
-//   const existingUser = await em.findOne(User, { id: userID });
-//   if (user.role !== 'admin') {
-//     return {
-//       success: false,
-//       message: 'Unauthorized access',
-//     };
-//   }
-//   if (!existingUser) {
-//     return { success: false, message: 'Unauthorized access' };
-//   }
-//   const stock = await em.findOne(Stock, {
-//     id: id,
-//     user: { id: userID },
-//   });
-//   if (!stock) {
-//     return { success: false, message: 'Stock tidak ditemukan' };
-//   }
-//   await em.removeAndFlush(stock);
-//   return { success: true, message: 'Stock berhasil dihapus' };
-// });

@@ -8,7 +8,7 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
     async ({ body }) => {
       const { name, email, password, role } = body;
       if (!name || !email || !password || !role) {
-        return { success: false, message: 'Ada isian yang kosong' };
+        throw new Error('UNAUTHORIZED');
       }
       const existingUser = await query(
         'SELECT email, password, role FROM user WHERE email = ?',
@@ -47,6 +47,9 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
         'SELECT id, email, password, role FROM user WHERE email = ?',
         [email]
       );
+      if (!email || !password) {
+        return { success: false, message: 'Ada isian yang kosong' };
+      }
       const user = users[0];
       if (!user) {
         return { success: false, message: 'Email tidak ditemukan' };
@@ -64,7 +67,7 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
       return {
         success: true,
         message: 'Login berhasil',
-        data: token,
+        token: token,
         timestamp: new Date(),
       };
     },
@@ -74,4 +77,28 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
         password: t.String(),
       }),
     }
-  );
+  )
+  .get('/check', async ({ request, set }) => {
+    const auth = request.headers.get('authorization');
+    if (!auth) {
+      set.status = 401;
+      return { message: 'Missing Authorization header' };
+    }
+
+    const token = auth.replace('Bearer ', '');
+    try {
+      const payload = await (app as any).jwt.verify(token);
+      return { ok: true, user: payload };
+    } catch {
+      set.status = 401;
+      return { message: 'Invalid token' };
+    }
+  })
+  .post('/logout', () => {
+    // TODO: Implement token blacklist if necessary
+
+    return {
+      success: true,
+      message: 'Logout berhasil',
+    };
+  });

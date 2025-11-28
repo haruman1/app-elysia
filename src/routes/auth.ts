@@ -1,5 +1,4 @@
 import { Elysia, t } from 'elysia';
-import { User } from '../entities/User';
 import { hashPassword, comparePassword } from '../utils/password';
 import { query } from '../../mysql.config';
 
@@ -8,6 +7,9 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
     '/register',
     async ({ body }) => {
       const { name, email, password, role } = body;
+      if (!name || !email || !password || !role) {
+        return { success: false, message: 'Ada isian yang kosong' };
+      }
       const existingUser = await query(
         'SELECT email, password, role FROM user WHERE email = ?',
         [email]
@@ -18,7 +20,7 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
 
       const hashed = await hashPassword(password);
       const user = await query(
-        'INSERT INTO user (name, email, password, role) VALUES (?, ?, ?, ?)',
+        'INSERT INTO user (name, email, password, role, created_at, updated_at) VALUES (?, ?, ?, ?, NOW(), NOW())',
         [name, email, hashed, role]
       );
       return {

@@ -30,8 +30,10 @@ export class Stock {
 
   @Property({ type: 'date' })
   createdAt: Date = new Date();
+
   @Property({ type: 'date', onUpdate: () => new Date() })
   updatedAt: Date = new Date();
+
   @Property({ type: 'date', nullable: true })
   deletedAt?: Date;
 

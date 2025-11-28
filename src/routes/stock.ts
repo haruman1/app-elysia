@@ -5,6 +5,45 @@ import { Stock } from '../entities/Stock';
 import { query } from '../../mysql.config';
 export const stockRoutes = new Elysia({ prefix: '/stocks' })
   .use(authMiddleware)
+  .post(
+    '/tambah',
+    async ({ body, user }) => {
+      const userCheck = await query('SELECT id FROM user WHERE id = ?', [
+        user.id,
+      ]);
+      if (userCheck.length === 0) {
+        throw new Error('UNAUTHORIZED');
+      }
+      if (!body.nama_produk || !body.jumlah_produk || !body.harga_produk) {
+        return { success: false, message: 'Ada isian yang kosong' };
+      }
+      const insertStock = await query(
+        'INSERT INTO stock (nama_produk, jumlah_produk, harga_produk, user_id, created_at, updated_at) VALUES (?, ?, ?, ?, NOW(), NOW())',
+        [
+          body.nama_produk,
+          body.jumlah_produk,
+          body.harga_produk,
+          userCheck[0].id,
+        ]
+      );
+      return {
+        success: true,
+        message: 'Stock berhasil ditambahkan',
+        data: insertStock,
+        timestamp: new Date(),
+      };
+    },
+    {
+      headers: t.Object({
+        authorization: t.String(),
+      }),
+      body: t.Object({
+        nama_produk: t.String(),
+        jumlah_produk: t.Number(),
+        harga_produk: t.Number(),
+      }),
+    }
+  )
   .get(
     '/',
     async ({ user }) => {

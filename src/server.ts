@@ -21,7 +21,7 @@ async function bootstrap() {
     .get('/', () => 'Hello Elysia')
     .use(openapi())
     .use(authRoutes)
-
+    .use(userRoutes)
     .listen(parseInt(process.env.PORT!));
 
   console.log(`🚀 Running at http://localhost:${process.env.PORT}`);

@@ -1,12 +1,11 @@
 import { Elysia, t } from 'elysia';
 import { jwt } from '@elysiajs/jwt';
-import Mysql from '../mysql.config';
-import { authRoutes } from './routes/auth';
-import { userRoutes } from './routes/users';
+import { authRoutes } from '../routes/auth';
+import { userRoutes } from '../routes/users';
 import openapi from '@elysiajs/openapi';
-import { stockRoutes } from './routes/stock';
+import { stockRoutes } from '../routes/stock';
 import { cors } from '@elysiajs/cors';
-import { movementStockRoutes } from './routes/movementStock';
+import { movementStockRoutes } from '../routes/movementStock';
 
 const app = new Elysia()
   .use(

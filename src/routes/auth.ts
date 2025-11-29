@@ -1,8 +1,11 @@
 import { Elysia, t } from 'elysia';
 import { hashPassword, comparePassword } from '../utils/password';
 import { query } from '../../mysql.config';
+import { jwtPlugin } from '../utils/jwt';
 
 export const authRoutes = new Elysia({ prefix: '/auth' })
+  .use(jwtPlugin)
+
   .post(
     '/register',
     async ({ body }) => {
@@ -10,19 +13,23 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
       if (!name || !email || !password || !role) {
         throw new Error('UNAUTHORIZED');
       }
+
       const existingUser = await query(
-        'SELECT email, password, role FROM user WHERE email = ?',
+        'SELECT email FROM user WHERE email = ?',
         [email]
       );
+
       if (existingUser.length > 0) {
         return { success: false, message: 'Email sudah terdaftar' };
       }
 
       const hashed = await hashPassword(password);
+
       const user = await query(
         'INSERT INTO user (name, email, password, role, created_at, updated_at) VALUES (?, ?, ?, ?, NOW(), NOW())',
         [name, email, hashed, role]
       );
+
       return {
         success: true,
         message: 'Registrasi berhasil, silakan login',
@@ -39,17 +46,21 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
       }),
     }
   )
+
   .post(
     '/sign-in',
     async ({ body, jwt }) => {
       const { email, password } = body;
+
+      if (!email || !password) {
+        return { success: false, message: 'Ada isian yang kosong' };
+      }
+
       const users = await query(
         'SELECT id, email, password, role FROM user WHERE email = ?',
         [email]
       );
-      if (!email || !password) {
-        return { success: false, message: 'Ada isian yang kosong' };
-      }
+
       const user = users[0];
       if (!user) {
         return { success: false, message: 'Email tidak ditemukan' };
@@ -59,15 +70,17 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
       if (!match) {
         return { success: false, message: 'Password salah' };
       }
+
       const token = await jwt.sign({
         id: user.id,
         email: user.email,
         role: user.role,
       });
+
       return {
         success: true,
         message: 'Login berhasil',
-        token: token,
+        token,
         timestamp: new Date(),
       };
     },
@@ -78,25 +91,28 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
       }),
     }
   )
-  .get('/check', async ({ request, set }) => {
+
+  // 🔥 FIX BAGIAN INI!
+  .get('/check', async ({ jwt, request, set }) => {
     const auth = request.headers.get('authorization');
+
     if (!auth) {
       set.status = 401;
       return { message: 'Missing Authorization header' };
     }
 
     const token = auth.replace('Bearer ', '');
+
     try {
-      const payload = await (app as any).jwt.verify(token);
+      const payload = await jwt.verify(token);
       return { ok: true, user: payload };
     } catch {
       set.status = 401;
       return { message: 'Invalid token' };
     }
   })
-  .post('/logout', () => {
-    // TODO: Implement token blacklist if necessary
 
+  .post('/logout', () => {
     return {
       success: true,
       message: 'Logout berhasil',

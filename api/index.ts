@@ -45,9 +45,5 @@ const app = new Elysia()
 // ❗ Vercel tidak boleh pakai .listen(), jadi hilangkan
 // .listen(parseInt(process.env.PORT!));
 
-export const config = {
-  runtime: 'vercel-bun@1.0.0', // WAJIB: karena MySQL, JWT, dll
-};
-
 // Vercel akan menjalankan ini sebagai handler
 export default app;

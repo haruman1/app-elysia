@@ -10,6 +10,9 @@ export const stockRoutes = new Elysia({ prefix: '/stocks' })
   .post(
     '/tambah',
     async ({ body, user }) => {
+      if (!user) {
+        throw new Error('UNAUTHORIZED');
+      }
       const userCheck = await query('SELECT id FROM user WHERE id = ?', [
         user.id,
       ]);

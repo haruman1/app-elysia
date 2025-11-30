@@ -11,7 +11,7 @@ export const userRoutes = new Elysia({ prefix: '/users' })
     async ({ user, params }) => {
       const id = String(params.id).trim();
 
-      if (user.id !== params.id && user.role !== 'admin') {
+      if (!user || (user.id !== params.id && user.role !== 'admin')) {
         return { success: false, message: 'Anda bukan admin' };
       }
       const terdaftar = await query(
@@ -171,7 +171,7 @@ export const userRoutes = new Elysia({ prefix: '/users' })
   .patch(
     '/change-role/:id',
     async ({ user, body, params }) => {
-      if (user.role !== 'admin') {
+      if (!user || user.role !== 'admin') {
         return { success: false, message: 'Anda bukan admin' };
       }
       const userId = String(params.id).trim();
@@ -213,7 +213,7 @@ export const userRoutes = new Elysia({ prefix: '/users' })
       if (existingUserResult.length === 0) {
         return { success: false, message: 'Pengguna tidak ditemukan' };
       }
-      if (user.id === targetId) {
+      if (!user || user.id === targetId) {
         return {
           success: false,
           message: 'Admin tidak boleh menghapus diri sendiri',

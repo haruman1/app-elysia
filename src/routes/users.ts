@@ -203,7 +203,7 @@ export const userRoutes = new Elysia({ prefix: '/users' })
     '/delete-account/:id',
     async ({ user, params }) => {
       const targetId = String(params.id).trim();
-      if (user.role !== 'admin') {
+      if (!user || user.role !== 'admin') {
         return { success: false, message: 'Anda bukan admin' };
       }
       const existingUserResult = await query(

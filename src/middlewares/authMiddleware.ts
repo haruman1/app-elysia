@@ -1,6 +1,7 @@
 // src/middlewares/authMiddleware.ts
 import { Elysia } from 'elysia';
 import { jwt } from '@elysiajs/jwt';
+import { AuthUser } from '../types/jwt';
 
 export const authMiddleware = new Elysia()
   .use(jwt({ secret: process.env.JWT_SECRET! }))
@@ -13,7 +14,11 @@ export const authMiddleware = new Elysia()
 
     try {
       const payload = await jwt.verify(token);
-      return { user: payload };
+
+      // Pastikan tidak pernah false
+      const user = (payload || null) as AuthUser | null;
+
+      return { user };
     } catch {
       return { user: null };
     }
@@ -24,14 +29,6 @@ export const authMiddleware = new Elysia()
       return {
         success: false,
         message: 'Unauthorized Access',
-      };
-    }
-  })
-  .onError(({ code, error }) => {
-    if (error.message === 'UNAUTHORIZED') {
-      return {
-        success: false,
-        message: 'Unauthorized access',
       };
     }
   })

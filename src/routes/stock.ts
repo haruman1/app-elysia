@@ -13,6 +13,9 @@ export const stockRoutes = new Elysia({ prefix: '/stocks' })
       if (!user) {
         throw new Error('UNAUTHORIZED');
       }
+      if (!user) {
+        throw new Error('UNAUTHORIZED');
+      }
       const userCheck = await query('SELECT id FROM user WHERE id = ?', [
         user.id,
       ]);
@@ -52,6 +55,10 @@ export const stockRoutes = new Elysia({ prefix: '/stocks' })
   .get(
     '/',
     async ({ user }) => {
+      if (!user) {
+        throw new Error('UNAUTHORIZED');
+      }
+
       const userCheck = await query('SELECT id, role FROM user WHERE id = ?', [
         user.id,
       ]);
@@ -82,6 +89,10 @@ export const stockRoutes = new Elysia({ prefix: '/stocks' })
     '/:id',
     async ({ params, user }) => {
       const id = String(params.id).trim();
+      if (!user) {
+        throw new Error('UNAUTHORIZED');
+      }
+
       const userCheck = await query('SELECT id FROM user WHERE id = ?', [
         user.id,
       ]);
@@ -110,6 +121,9 @@ export const stockRoutes = new Elysia({ prefix: '/stocks' })
     }
   )
   .get('preview/:id', async ({ params, user, set }) => {
+    if (!user) {
+      throw new Error('UNAUTHORIZED');
+    }
     const rows = await query(
       'SELECT * FROM stock WHERE user_id = ? AND deleted_at IS NULL',
       [user.id]
@@ -155,6 +169,9 @@ export const stockRoutes = new Elysia({ prefix: '/stocks' })
     '/:id',
     async ({ params, body, user }) => {
       const id = String(params.id).trim();
+      if (!user) {
+        throw new Error('UNAUTHORIZED');
+      }
       const userCheck = await query('SELECT id FROM user WHERE id = ?', [
         user.id,
       ]);
@@ -197,6 +214,9 @@ export const stockRoutes = new Elysia({ prefix: '/stocks' })
     }
   )
   .patch('/revive/:id', async ({ params, user }) => {
+    if (!user) {
+      throw new Error('UNAUTHORIZED');
+    }
     const id = String(params.id).trim();
     const userCheck = await query('SELECT * FROM user WHERE id = ?', [user.id]);
     if (userCheck.length === 0) {
@@ -234,6 +254,9 @@ export const stockRoutes = new Elysia({ prefix: '/stocks' })
   .delete(
     '/:id',
     async ({ params, user }) => {
+      if (!user) {
+        throw new Error('UNAUTHORIZED');
+      }
       const id = String(params.id).trim();
       const userCheck = await query('SELECT id, role FROM user WHERE id = ?', [
         user.id,

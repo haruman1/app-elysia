@@ -7,7 +7,6 @@ import { userRoutes } from './routes/users';
 import openapi from '@elysiajs/openapi';
 import { stockRoutes } from './routes/stock';
 import { cors } from '@elysiajs/cors';
-import { movementStockRoutes } from './routes/movementStock';
 
 async function bootstrap() {
   const app = new Elysia()

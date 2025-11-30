@@ -126,13 +126,23 @@ export const stockRoutes = new Elysia({ prefix: '/stocks' })
     if (!rows.length) {
       doc.fontSize(14).text('Tidak ada data stock.', { align: 'left' });
     } else {
-      rows.forEach((item, index) => {
-        doc.fontSize(14).text(`${index + 1}. ${item.nama_produk}`);
-        doc.text(`Jumlah        : ${item.jumlah_produk}`);
-        doc.text(`Harga          : ${item.harga_produk}`);
-        doc.text(`Ditambahkan oleh: ${item.name}`);
-        doc.moveDown();
-      });
+      rows.forEach(
+        (
+          item: {
+            nama_produk: string;
+            jumlah_produk: number;
+            harga_produk: number;
+            name: string;
+          },
+          index: number
+        ) => {
+          doc.fontSize(14).text(`${index + 1}. ${item.nama_produk}`);
+          doc.text(`Jumlah        : ${item.jumlah_produk}`);
+          doc.text(`Harga          : ${item.harga_produk}`);
+          doc.text(`Ditambahkan oleh: ${item.name}`);
+          doc.moveDown();
+        }
+      );
     }
 
     doc.end();

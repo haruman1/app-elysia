@@ -2,7 +2,7 @@ import { Elysia, t } from 'elysia';
 import { hashPassword, comparePassword } from '../utils/password';
 import { query } from '../../mysql.config';
 import { jwtPlugin } from '../utils/jwt';
-
+import { generateUUID } from '../utils/uuid';
 export const authRoutes = new Elysia({ prefix: '/auth' })
   .use(jwtPlugin)
 
@@ -26,8 +26,8 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
       const hashed = await hashPassword(password);
 
       const user = await query(
-        'INSERT INTO user (name, email, password, role, created_at, updated_at) VALUES (?, ?, ?, ?, NOW(), NOW())',
-        [name, email, hashed, role]
+        'INSERT INTO user (id,name, email, password, role, created_at, updated_at) VALUES (?, ?, ?, ?, NOW(), NOW())',
+        [generateUUID(), name, email, hashed, role]
       );
 
       return {

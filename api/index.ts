@@ -37,9 +37,7 @@ const app = new Elysia()
     })
   )
   .use(openapi())
-  .use(authRoutes)
-  .use(userRoutes)
-  .use(stockRoutes);
+  .use(authRoutes);
 
 // ❗ Vercel tidak boleh pakai .listen(), jadi hilangkan
 // .listen(parseInt(process.env.PORT!));

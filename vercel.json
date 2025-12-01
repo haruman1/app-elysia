@@ -1,8 +1,7 @@
 {
   "functions": {
     "api/**/*.js": {
-      "runtime": "bun@1.x",
-      "bunVersion": "1.x"
+      "runtime": "bun@1.x"
     }
   }
 }

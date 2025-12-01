@@ -1,6 +1,6 @@
 import { Elysia, t } from 'elysia';
 import { authMiddleware } from '../middlewares/authMiddleware';
-import { User } from '../entities/User';
+
 import { hashPassword, comparePassword } from '../utils/password';
 import { query } from '../../mysql.config';
 

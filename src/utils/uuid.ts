@@ -1,7 +1,5 @@
-import { v4 } from 'uuid';
-
 export const generateUUID = (): string => {
-  return v4();
+  return crypto.randomUUID();
 };
 export const isValidUUID = (uuid: string): boolean => {
   const uuidRegex =

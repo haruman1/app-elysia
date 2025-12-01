@@ -1,5 +1,11 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "bunVersion": "1.x",
-  "rewrites": [{ "source": "/(.*)", "destination": "/api/index.ts" }]
+  "buildCommand": "bun build ./src/index.ts --compile --outfile server",
+  "outputDirectory": ".",
+  "functions": {
+    "server": {
+      "runtime": "nodejs20.x"
+    }
+  },
+  "routes": [{ "src": "/(.*)", "middleware": "server" }]
 }

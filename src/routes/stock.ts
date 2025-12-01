@@ -4,6 +4,7 @@ import { User } from '../entities/User';
 import { Stock } from '../entities/Stock';
 import { query } from '../../mysql.config';
 import PDFDocument from 'pdfkit';
+import { generateUUID } from '../utils/uuid';
 
 export const stockRoutes = new Elysia({ prefix: '/stocks' })
   .use(authMiddleware)
@@ -26,8 +27,9 @@ export const stockRoutes = new Elysia({ prefix: '/stocks' })
         return { success: false, message: 'Ada isian yang kosong' };
       }
       const insertStock = await query(
-        'INSERT INTO stock (nama_produk, jumlah_produk, harga_produk, user_id, created_at, updated_at) VALUES (?, ?, ?, ?, NOW(), NOW())',
+        'INSERT INTO stock (id, nama_produk, jumlah_produk, harga_produk, user_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, NOW(), NOW())',
         [
+          generateUUID(),
           body.nama_produk,
           body.jumlah_produk,
           body.harga_produk,

@@ -26,7 +26,7 @@ export const stockRoutes = new Elysia({ prefix: '/stocks' })
         return { success: false, message: 'Ada isian yang kosong' };
       }
       const insertStock = await query(
-        'INSERT INTO stock (id,nama_produk, jumlah_produk, harga_produk, user_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, NOW(), NOW())',
+        'INSERT INTO stock (id, nama_produk, jumlah_produk, harga_produk, user_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, NOW(), NOW())',
         [
           generateUUID(),
           body.nama_produk,

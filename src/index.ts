@@ -5,6 +5,7 @@ import { userRoutes } from '../src/routes/users';
 import openapi from '@elysiajs/openapi';
 import { stockRoutes } from '../src/routes/stock';
 import { cors } from '@elysiajs/cors';
+import { movementStockRoutes } from './routes/movementStock';
 
 const app = new Elysia()
   .use(
@@ -38,7 +39,8 @@ const app = new Elysia()
   .use(openapi())
   .use(authRoutes)
   .use(userRoutes)
-  .use(stockRoutes);
+  .use(stockRoutes)
+  .use(movementStockRoutes);
 
 // ❗ Vercel tidak boleh pakai .listen(), jadi hilangkan
 // .listen(parseInt(process.env.PORT!));

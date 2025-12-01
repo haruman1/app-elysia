@@ -9,8 +9,8 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
   .post(
     '/register',
     async ({ body }) => {
-      const { name, email, password, role } = body;
-      if (!name || !email || !password || !role) {
+      const { name, email, password } = body;
+      if (!name || !email || !password) {
         throw new Error('UNAUTHORIZED');
       }
 
@@ -26,8 +26,8 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
       const hashed = await hashPassword(password);
 
       const user = await query(
-        'INSERT INTO user (id, name, email, password, role, created_at, updated_at) VALUES (?, ?, ?, ?, ?, NOW(), NOW())',
-        [generateUUID(), name, email, hashed, role]
+        'INSERT INTO user (id, name, email, password, role, created_at, updated_at) VALUES (?, ?, ?, ?, "user", NOW(), NOW())',
+        [generateUUID(), name, email, hashed]
       );
 
       return {
@@ -42,7 +42,6 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
         name: t.String(),
         email: t.String(),
         password: t.String(),
-        role: t.Optional(t.String()),
       }),
     }
   )

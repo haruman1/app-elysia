@@ -1,7 +1,6 @@
 import { Elysia, t } from 'elysia';
 import { authMiddleware } from '../middlewares/authMiddleware';
-import { User } from '../entities/User';
-import { Stock } from '../entities/Stock';
+
 import { query } from '../../mysql.config';
 import { generateUUID } from '../utils/uuid';
 import PDFDocument from 'pdfkit';

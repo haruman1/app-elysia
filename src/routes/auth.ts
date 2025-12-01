@@ -26,7 +26,7 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
       const hashed = await hashPassword(password);
 
       const user = await query(
-        'INSERT INTO user (id,name, email, password, role, created_at, updated_at) VALUES (?, ?, ?, ?, NOW(), NOW())',
+        'INSERT INTO user (id, name, email, password, role, created_at, updated_at) VALUES (?, ?, ?, ?, NOW(), NOW())',
         [generateUUID(), name, email, hashed, role]
       );
 
@@ -113,6 +113,8 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
   })
 
   .post('/logout', () => {
+    // TODO: implementasi logout dengan token blacklist atau metode lain
+
     return {
       success: true,
       message: 'Logout berhasil',

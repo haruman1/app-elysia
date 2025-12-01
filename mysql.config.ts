@@ -4,8 +4,6 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // Flag apakah sedang jalan di Vercel (serverless)
-const isVercel =
-  process.env.VERCEL === '1' || process.env.NODE_ENV === 'production';
 
 // Membuat instance serverless-mysql
 const Mysql = serverlessMysql({

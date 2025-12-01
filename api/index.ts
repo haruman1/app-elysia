@@ -1,3 +1,4 @@
+// api/index.ts
 import { Elysia, t } from 'elysia';
 import { jwt } from '@elysiajs/jwt';
 import { authRoutes } from '../src/routes/auth';

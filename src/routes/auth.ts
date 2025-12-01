@@ -1,8 +1,8 @@
 import { Elysia, t } from 'elysia';
-import { hashPassword, comparePassword } from '../utils/password.ts';
-import { query } from '../../mysql.config.ts';
-import { jwtPlugin } from '../utils/jwt.ts';
-import { generateUUID } from '../utils/uuid.ts';
+import { hashPassword, comparePassword } from '../utils/password';
+import { query } from '../../mysql.config';
+import { jwtPlugin } from '../utils/jwt';
+
 export const authRoutes = new Elysia({ prefix: '/auth' })
   .use(jwtPlugin)
 
@@ -26,8 +26,8 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
       const hashed = await hashPassword(password);
 
       const user = await query(
-        'INSERT INTO user (id, name, email, password, role, created_at, updated_at) VALUES (?, ?, ?, ?, ?, NOW(), NOW())',
-        [generateUUID(), name, email, hashed, role]
+        'INSERT INTO user (name, email, password, role, created_at, updated_at) VALUES (?, ?, ?, ?, NOW(), NOW())',
+        [name, email, hashed, role]
       );
 
       return {
@@ -113,8 +113,6 @@ export const authRoutes = new Elysia({ prefix: '/auth' })
   })
 
   .post('/logout', () => {
-    // TODO: implementasi logout dengan token blacklist atau metode lain
-
     return {
       success: true,
       message: 'Logout berhasil',

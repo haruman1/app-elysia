@@ -1,7 +1,7 @@
 import { Elysia, t } from 'elysia';
-import { authMiddleware } from '../middlewares/authMiddleware.ts';
-
-import { hashPassword, comparePassword } from '../utils/password.ts';
+import { authMiddleware } from '../middlewares/authMiddleware';
+import { User } from '../entities/User';
+import { hashPassword, comparePassword } from '../utils/password';
 import { query } from '../../mysql.config';
 
 export const userRoutes = new Elysia({ prefix: '/users' })

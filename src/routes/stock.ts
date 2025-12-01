@@ -1,8 +1,8 @@
 import { Elysia, t } from 'elysia';
-import { authMiddleware } from '../middlewares/authMiddleware.ts';
-
-import { query } from '../../mysql.config.ts';
-import { generateUUID } from '../utils/uuid.ts';
+import { authMiddleware } from '../middlewares/authMiddleware';
+import { User } from '../entities/User';
+import { Stock } from '../entities/Stock';
+import { query } from '../../mysql.config';
 import PDFDocument from 'pdfkit';
 
 export const stockRoutes = new Elysia({ prefix: '/stocks' })
@@ -26,9 +26,8 @@ export const stockRoutes = new Elysia({ prefix: '/stocks' })
         return { success: false, message: 'Ada isian yang kosong' };
       }
       const insertStock = await query(
-        'INSERT INTO stock (id, nama_produk, jumlah_produk, harga_produk, user_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, NOW(), NOW())',
+        'INSERT INTO stock (nama_produk, jumlah_produk, harga_produk, user_id, created_at, updated_at) VALUES (?, ?, ?, ?, NOW(), NOW())',
         [
-          generateUUID(),
           body.nama_produk,
           body.jumlah_produk,
           body.harga_produk,
@@ -102,7 +101,7 @@ export const stockRoutes = new Elysia({ prefix: '/stocks' })
       }
       const Stock = await query(
         'SELECT stock.id as Stock_ID, stock.nama_produk, stock.jumlah_produk, stock.harga_produk, user.name as Ditambahkan_oleh FROM stock LEFT JOIN user ON stock.user_id = user.id WHERE stock.id = ? AND stock.user_id = ? LIMIT 1',
-
+        // 'SELECT id, nama_produk, jumlah_produk, harga_produk FROM stock WHERE id = ? AND user_id = ?',
         [id, userCheck[0].id]
       );
       if (Stock.length === 0) {

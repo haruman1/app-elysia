@@ -7,5 +7,5 @@
       "runtime": "nodejs20.x"
     }
   },
-  "routes": [{ "src": "/(.*)", "middleware": "server" }]
+  "rewrites": [{ "source": "/(.*)", "destination": "/api/index.ts" }]
 }

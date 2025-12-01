@@ -2,10 +2,5 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "bun build src/index.ts --compile --outfile server",
   "outputDirectory": ".",
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "server"
-    }
-  ]
+  "routes": [{ "src": "/(.*)", "dest": "server" }]
 }

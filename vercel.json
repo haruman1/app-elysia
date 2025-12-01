@@ -1,7 +1,4 @@
 {
-  "functions": {
-    "api/index.ts": {
-      "runtime": "bun@1.1.8"
-    }
-  }
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "bunVersion": "1.x"
 }

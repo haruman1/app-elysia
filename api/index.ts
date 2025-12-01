@@ -1,4 +1,3 @@
-// api/index.ts
 import { Elysia, t } from 'elysia';
 import { jwt } from '@elysiajs/jwt';
 import { authRoutes } from '../src/routes/auth';
@@ -37,6 +36,8 @@ const app = new Elysia()
     })
   )
   .use(openapi())
+  .use(authRoutes)
+  .use(userRoutes)
   .use(stockRoutes);
 
 // ❗ Vercel tidak boleh pakai .listen(), jadi hilangkan

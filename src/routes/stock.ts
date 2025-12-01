@@ -1,8 +1,8 @@
 import { Elysia, t } from 'elysia';
-import { authMiddleware } from '../middlewares/authMiddleware';
+import { authMiddleware } from '../middlewares/authMiddleware.ts';
 
-import { query } from '../../mysql.config';
-import { generateUUID } from '../utils/uuid';
+import { query } from '../../mysql.config.ts';
+import { generateUUID } from '../utils/uuid.ts';
 import PDFDocument from 'pdfkit';
 
 export const stockRoutes = new Elysia({ prefix: '/stocks' })

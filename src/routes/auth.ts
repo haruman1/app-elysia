@@ -1,8 +1,8 @@
 import { Elysia, t } from 'elysia';
-import { hashPassword, comparePassword } from '../utils/password';
-import { query } from '../../mysql.config';
-import { jwtPlugin } from '../utils/jwt';
-import { generateUUID } from '../utils/uuid';
+import { hashPassword, comparePassword } from '../utils/password.ts';
+import { query } from '../../mysql.config.ts';
+import { jwtPlugin } from '../utils/jwt.ts';
+import { generateUUID } from '../utils/uuid.ts';
 export const authRoutes = new Elysia({ prefix: '/auth' })
   .use(jwtPlugin)
 

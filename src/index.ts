@@ -1,9 +1,9 @@
 import { Elysia, t } from 'elysia';
 import { jwt } from '@elysiajs/jwt';
-import { authRoutes } from '../src/routes/auth';
-import { userRoutes } from '../src/routes/users';
+import { authRoutes } from '../src/routes/auth.ts';
+import { userRoutes } from '../src/routes/users.ts';
 import openapi from '@elysiajs/openapi';
-import { stockRoutes } from '../src/routes/stock';
+import { stockRoutes } from '../src/routes/stock.ts';
 import { cors } from '@elysiajs/cors';
 
 const app = new Elysia()
